@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<ws>
+	<definition>
+		<triple subject="x" predicate="0" object="y" isinput="true" isexistential="true"/>
+		<triple subject="y" predicate="0" object="z" isinput="false" isexistential="true"/>
+		<triple subject="t" predicate="1" object="z" isinput="false" isexistential="false"/>
+	</definition>
+</ws>

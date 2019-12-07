@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<ws>
+	<definition>
+		<triple subject="x" predicate="q1-" object="y" isinput="true"/>
+	</definition>
+</ws>

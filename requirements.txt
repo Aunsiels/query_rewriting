@@ -1,0 +1,4 @@
+pytest
+networkx
+pyformlang
+numpy
