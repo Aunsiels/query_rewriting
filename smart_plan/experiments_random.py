@@ -1,4 +1,5 @@
 import os
+from random import random
 from shutil import copyfile
 
 from smart_plan.experiments_benedikt import find_plan_benedikt
@@ -10,8 +11,11 @@ from smart_plan.utils import get_schema_xml, get_all_linear_subfunctions, get_qu
 
 if len(argv) > 1:
     filename = argv[1]
+    file_unique_suffix = argv[1].split(".")[0]
 else:
     filename = "result_experiments_random_new.tsv"
+    file_unique_suffix = str(abs(random.randint()))
+
 
 
 def get_random_relations(n):
@@ -73,7 +77,7 @@ if __name__ == '__main__':
 
             for relation in relations:
                 query_xml = get_query_xml(relation)
-                dir_name = "../benedikt_schemas/random/"
+                dir_name = "../benedikt_schemas/random" + file_unique_suffix + "/"
                 if not os.path.exists(dir_name):
                     os.makedirs(dir_name)
                 with open(dir_name + "schema.xml", "w") as f:
