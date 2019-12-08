@@ -231,7 +231,7 @@ class Function(object):
 
     def get_xml_relation(self):
         xml = ""
-        xml += '<relation name="View' + str(self.name) + '">\n'
+        xml += '<relation name="View_' + str(self.name) + '">\n'
         for variable in self.atoms.nodes:
             if variable not in self.existential_variables:
                 xml += '<attribute name="' + str(variable) + '" type="java.lang.String"/>\n'
