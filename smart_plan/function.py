@@ -188,6 +188,47 @@ class Function(object):
         return self.name + "(" + ", ".join(["Input:" + start_node] + new_nodes) \
             + ")" + " = " + " and ".join(res)
 
+    def is_linear(self):
+        current_node = self.start_node
+        encountered_nodes = {current_node}
+        while True:
+            next_nodes = self.atoms[current_node]
+            if len(next_nodes) > 2:
+                return False
+            if len(next_nodes) < 2 and current_node != self.start_node:
+                break
+            previous_node = current_node
+            for next_node in next_nodes:
+                if next_node in encountered_nodes:
+                    continue
+                if len(next_nodes[next_node]) != 1:
+                    return False
+                current_node = next_node
+            if previous_node == current_node:
+                return False
+            encountered_nodes.add(current_node)
+        if len(encountered_nodes) != self.get_number_variables():
+            return False
+        return True
+
+    def get_linear_subfunctions(self):
+        subfunctions = []
+        counter = 0
+        for target_node in self.atoms.nodes:
+            if target_node != self.start_node and target_node not in self.existential_variables:
+                for unlabeled_path in nx.all_simple_paths(self.atoms, self.start_node, target_node):
+                    new_function = Function(self.name + str(counter))
+                    counter += 1
+                    for i in range(len(unlabeled_path) - 1):
+                        new_function.add_atom(
+                            list(self.atoms.get_edge_data(unlabeled_path[i], unlabeled_path[i+1]).items())[0][1]["relation"],
+                            unlabeled_path[i],
+                            unlabeled_path[i+1])
+                        if unlabeled_path[i+1] in self.existential_variables:
+                            new_function.set_existential_variable(unlabeled_path[i+1])
+                    subfunctions.append(new_function)
+        return subfunctions
+
 
 def put_out_indicators_in_query(longest_query):
     new_longest_query = []

@@ -48,6 +48,30 @@ class TestFunction(unittest.TestCase):
                          sorted([["r1"], ["r1", "r2"], ["r3"], ["r3", "r2-"], ["r1", "r4"], ["r3", "r4-"]
                                  ]))
 
+    def test_real_linear(self):
+        self.function.add_atom("r1", "x", "y")
+        self.function.add_atom("r2", "y", "z")
+        self.assertTrue(self.function.is_linear())
+
+    def test_false_linear(self):
+        self.function.add_atom("r1", "x", "y")
+        self.function.add_atom("r2", "y", "z")
+        self.function.add_atom("r2", "x", "z")
+        self.assertFalse(self.function.is_linear())
+
+    def test_false_linear2(self):
+        self.function.add_atom("r1", "x", "y")
+        self.function.add_atom("r2", "z", "t")
+        self.assertFalse(self.function.is_linear())
+
+    def test_get_all_linear_subfunctions(self):
+        self.function.add_atom("r1", "x", "y")
+        self.function.add_atom("r2", "y", "z")
+        self.function.add_atom("r3", "y", "t")
+        self.assertEqual(len(self.function.get_linear_subfunctions()), 3)
+        for function in self.function.get_linear_subfunctions():
+            self.assertTrue(function.is_linear())
+
     def test_existential(self):
         self.assertEqual(self.function.get_number_existential_variables(), 0)
 
