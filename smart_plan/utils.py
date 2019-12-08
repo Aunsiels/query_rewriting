@@ -296,4 +296,49 @@ def get_nicoleta_assumption_uids(linear_functions):
     for linear_function in linear_functions:
         for i in range(0, len(linear_function) - 1):
             uids.add(UID(get_inverse_relation(linear_function[i]), linear_function[i+1]))
-    return list(uids)
+    return deduce_all_uids(list(uids))
+
+
+def deduce_all_uids(original_uids):
+    uids, reversed_uids = get_uids_and_reversed_as_dict(original_uids)
+    to_process = get_initial_process_queue(original_uids, reversed_uids)
+    while to_process:
+        body, head = to_process.pop()
+        if head in uids[body]:
+            continue
+        uids[body].add(head)
+        for other_body in reversed_uids[body]:
+            to_process.append((other_body, head))
+    resulting_uids = generate_uids_from_dict(uids)
+    return resulting_uids
+
+
+def generate_uids_from_dict(uids):
+    resulting_uids = []
+    for body in uids:
+        for head in uids[body]:
+            resulting_uids.append(UID(body, head))
+    return resulting_uids
+
+
+def get_initial_process_queue(original_uids, reversed_uids):
+    to_process = []
+    for uid in original_uids:
+        for other_body in reversed_uids[uid.get_body()]:
+            to_process.append((other_body, uid.get_head()))
+    return to_process
+
+
+def get_uids_and_reversed_as_dict(original_uids):
+    uids = dict()
+    reversed_uids = dict()
+    for uid in original_uids:
+        if uid.get_body() not in uids:
+            uids[uid.get_body()] = set()
+            reversed_uids[uid.get_body()] = set()
+        if uid.get_head() not in uids:
+            uids[uid.get_head()] = set()
+            reversed_uids[uid.get_head()] = set()
+        uids[uid.get_body()].add(uid.get_head())
+        reversed_uids[uid.get_head()].add(uid.get_body())
+    return uids, reversed_uids
