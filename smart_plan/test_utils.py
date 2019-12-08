@@ -2,7 +2,7 @@ import unittest
 
 from smart_plan.function import Function
 from smart_plan.uid import UID
-from smart_plan.utils import turn_functions_into_regex, get_all_relations, deduce_all_uids
+from smart_plan.utils import turn_functions_into_regex, get_all_relations, deduce_all_uids, get_schema_xml
 
 
 class TestUtils(unittest.TestCase):
@@ -24,6 +24,25 @@ class TestUtils(unittest.TestCase):
         self.assertIn(UID("r1", "r3"), new_uids)
         for uid in uids:
             self.assertIn(uid, new_uids)
+
+    def test_generate_schema(self):
+        uids = [
+            UID("hasChild", "hasChild-"),
+            UID("birthday", "hasChild-")
+        ]
+        functions = []
+        function = Function("GetParent")
+        function.add_atom("hasChild-", "x", "y")
+        functions.append(function)
+        function = Function("GetGrandChildrenBirthday")
+        function.add_atom("hasChild", "x", "y")
+        function.add_atom("hasChild", "y", "z")
+        function.add_atom("birthday", "z", "t")
+        function.set_existential_variable("y")
+        functions.append(function)
+        relations = ["hasChild", "hasChild-", "birthday", "birthday-"]
+        schema = get_schema_xml(functions, relations, uids)
+        self.assertIn("schema", schema)
 
     def setUp(self):
         self.f0 = Function()

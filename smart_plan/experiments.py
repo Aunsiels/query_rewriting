@@ -1,7 +1,10 @@
+import os
+
 from smart_plan.function import Function
 from smart_plan.function_reader import FunctionReader
 from smart_plan import utils
 import logging
+
 
 logging.basicConfig(filename='experiments.log', level=logging.DEBUG)
 
@@ -16,6 +19,7 @@ directories = [
 if __name__ == '__main__':
 
     for dir in directories:
+        name = dir.split("/")[-2]
         print("For", dir)
         logging.info("For: %s", str(dir))
 
@@ -30,6 +34,7 @@ if __name__ == '__main__':
         relations = sorted(utils.get_all_relations(functions))
         print("Relations", len(relations))
 
+
         # enfa = utils.get_enfa_from_functions(functions)
         # enfa = utils.get_folded_automaton(enfa)
 
@@ -40,6 +45,7 @@ if __name__ == '__main__':
 
         for relation in relations:
             logging.info("Processing %s", relation)
+
             query = Function()
             query.add_atom(relation, "x", "y")
             deter = utils.get_dfa_from_functions(functions, relation)
@@ -55,7 +61,6 @@ if __name__ == '__main__':
                     break
             else:
                 logging.info("%s CANNOT be answered", relation)
-
 
         logging.info("%f queries were answered", answered / len(relations) * 100.0)
         logging.info("The mean size of the plan is %f", sum(sizes) / len(sizes))

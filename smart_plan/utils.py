@@ -342,3 +342,51 @@ def get_uids_and_reversed_as_dict(original_uids):
         uids[uid.get_body()].add(uid.get_head())
         reversed_uids[uid.get_head()].add(uid.get_body())
     return uids, reversed_uids
+
+
+def get_schema_xml(functions, relations, uids):
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<schema>\n<relations>\n'
+    for relation in relations:
+        if relation[-1] == "-":
+            continue
+        xml += '<relation name="' + relation + '">\n'
+        xml += '<attribute name="' + relation + '.1" type="java.lang.String"/>\n'
+        xml += '<attribute name="' + relation + '.2" type="java.lang.String"/>\n'
+        xml += '</relation>\n'
+    for function in functions:
+        xml += function.get_xml_relation()
+    xml += "</relations>\n\n<dependencies>\n"
+    for uid in uids:
+        xml += uid.get_xml_dependency()
+    for function in functions:
+        xml += function.get_xml_dependencies()
+    xml += '</dependencies>\n</schema>\n'
+    return xml
+
+
+def get_query_xml(relation):
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<query type="conjunctive">\n<body>\n'
+    if relation[-1] == "-":
+        relation = get_inverse_relation(relation)
+        xml += '<atom name="' + relation + '">\n'
+        xml += '<variable name="b" />\n'
+        xml += '<constant value="a" />\n'
+    else:
+        xml += '<atom name="' + relation + '">\n'
+        xml += '<constant value="a" />\n'
+        xml += '<variable name="b" />\n'
+    xml += """</atom>
+    </body>
+    <head name="Q">
+        <variable name="b" />
+    </head>
+    </query>
+    """
+    return xml
+
+
+def get_all_linear_subfunctions(functions):
+    result = []
+    for function in functions:
+        result += function.get_linear_subfunctions()
+    return result

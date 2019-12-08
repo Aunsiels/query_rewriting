@@ -2,4 +2,7 @@
 venv
 *log
 *swp
+* pyc
+benedikt_schema*
 *pyc
+__pycache__

@@ -72,6 +72,32 @@ class TestFunction(unittest.TestCase):
         for function in self.function.get_linear_subfunctions():
             self.assertTrue(function.is_linear())
 
+    def test_get_xml_relation(self):
+        self.function.name = "A"
+        self.function.add_atom("r1", "xxx", "yyy")
+        self.function.add_atom("r2", "yyy", "zzz")
+        self.function.add_atom("r2", "zzz", "ttt")
+        self.function.set_existential_variable("zzz")
+        xml = self.function.get_xml_relation()
+        self.assertIn("ViewA", xml)
+        self.assertIn("xxx", xml)
+        self.assertIn("yyy", xml)
+        self.assertNotIn("zzz", xml)
+        self.assertIn("ttt", xml)
+
+    def test_get_xml_dependencies(self):
+        self.function.name = "A"
+        self.function.add_atom("r1", "xxx", "yyy")
+        self.function.add_atom("r2", "yyy", "zzz")
+        self.function.add_atom("r2", "zzz", "ttt")
+        self.function.set_existential_variable("zzz")
+        xml = self.function.get_xml_dependencies()
+        self.assertEqual(xml.count("ViewA"), 2)
+        self.assertEqual(xml.count("xxx"), 4)
+        self.assertEqual(xml.count("yyy"), 6)
+        self.assertEqual(xml.count("ttt"), 4)
+        self.assertEqual(xml.count("zzz"), 4)
+
     def test_existential(self):
         self.assertEqual(self.function.get_number_existential_variables(), 0)
 

@@ -229,6 +229,64 @@ class Function(object):
                     subfunctions.append(new_function)
         return subfunctions
 
+    def get_xml_relation(self):
+        xml = ""
+        xml += '<relation name="View' + str(self.name) + '">\n'
+        for variable in self.atoms.nodes:
+            if variable not in self.existential_variables:
+                xml += '<attribute name="' + str(variable) + '" type="java.lang.String"/>\n'
+        xml += '<access-method name="m' + str(self.name) + '" type="LIMITED" inputs="1" cost="1"/>\n</relation>\n'
+        return xml
+
+    def get_xml_dependencies(self):
+        xml = "<dependency>\n<body>\n"
+        xml += self.get_view_xml_dependency_part()
+        xml += "</body>\n<head>\n"
+        xml += self.get_relation_xml_dependency_part()
+        xml += '</head>\n</dependency>\n'
+        xml += "<dependency>\n<body>\n"
+        xml += self.get_relation_xml_dependency_part()
+        xml += "</body>\n<head>\n"
+        xml += self.get_view_xml_dependency_part()
+        xml += '</head>\n</dependency>\n'
+        return xml
+
+    def get_view_xml_dependency_part(self):
+        xml = ""
+        xml += '<atom name="View' + str(self.name) + '">\n'
+        for variable in self.atoms.nodes:
+            if variable not in self.existential_variables:
+                xml += '<variable name="' + str(variable) + '"/>\n'
+        xml += '</atom>'
+        return xml
+
+    def get_relation_xml_dependency_part(self):
+        xml = ""
+        current_node = self.start_node
+        visited_nodes = {current_node}
+        while current_node is not None:
+            next_nodes = self.atoms[current_node]
+            previous_node = current_node
+            current_node = None
+            for next_node in next_nodes:
+                if next_node in visited_nodes:
+                    continue
+                current_node = next_node
+                visited_nodes.add(current_node)
+                for relation_d in next_nodes[next_node].values():
+                    relation = relation_d["relation"]
+                    if relation[-1] == "-":
+                        relation = get_inverse_relation(relation)
+                        xml += '<atom name="' + relation + '">\n'
+                        xml += '<variable name="' + str(current_node) + '" />\n'
+                        xml += '<variable name="' + str(previous_node) + '" />\n'
+                    else:
+                        xml += '<atom name="' + relation + '">\n'
+                        xml += '<variable name="' + str(previous_node) + '" />\n'
+                        xml += '<variable name="' + str(current_node) + '" />\n'
+                    xml += '</atom>\n'
+        return xml
+
 
 def put_out_indicators_in_query(longest_query):
     new_longest_query = []
