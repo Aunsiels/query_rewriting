@@ -253,7 +253,7 @@ class Function(object):
 
     def get_view_xml_dependency_part(self):
         xml = ""
-        xml += '<atom name="View' + str(self.name) + '">\n'
+        xml += '<atom name="View_' + str(self.name) + '">\n'
         for variable in self.atoms.nodes:
             if variable not in self.existential_variables:
                 xml += '<variable name="' + str(variable) + '"/>\n'

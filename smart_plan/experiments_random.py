@@ -17,8 +17,8 @@ else:
 def get_random_relations(n):
     res = []
     for i in range(n):
-        res.append(str(i))
-        res.append(str(i) + "-")
+        res.append("r" + str(i))
+        res.append("r" + str(i) + "-")
     return res
 
 
