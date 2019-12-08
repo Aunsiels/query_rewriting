@@ -17,8 +17,8 @@ directories = [
                "../definition/Music/"
               ]
 
-TIMEOUT = "10000"
-K_MAX = 10
+TIMEOUT = "120000"
+K_MAX = 15
 
 
 def find_plan_benedikt(name):

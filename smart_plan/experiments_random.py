@@ -1,6 +1,12 @@
+import os
+from shutil import copyfile
+
+from smart_plan.experiments_benedikt import find_plan_benedikt
 from smart_plan.function import Function
 from smart_plan import utils
 from sys import argv
+
+from smart_plan.utils import get_schema_xml, get_all_linear_subfunctions, get_query_xml
 
 if len(argv) > 1:
     filename = argv[1]
@@ -37,6 +43,9 @@ experiments_setups = \
 
 if __name__ == '__main__':
 
+    if not os.path.exists("../benedikt_schemas"):
+        os.makedirs("../benedikt_schemas")
+
     while True:
         for min_length, max_length, n_relation, n_function, proba_existential in experiments_setups:
 
@@ -49,14 +58,38 @@ if __name__ == '__main__':
 
             uids = utils.get_nicoleta_assumption_uids(linear_paths)
 
+            schema = get_schema_xml(get_all_linear_subfunctions(functions),
+                                    relations,
+                                    uids)
+
             #enfa = utils.get_enfa_from_functions(functions)
             #new_enfa = utils.get_folded_automaton(enfa)
 
             answered_us = 0
             answered_susie = 0
             answered_fake_susie = 0
+            answered_benedikt = 0
+            timeout_benedikt = 0
 
             for relation in relations:
+                query_xml = get_query_xml(relation)
+                dir_name = "../benedikt_schemas/random/"
+                if not os.path.exists(dir_name):
+                    os.makedirs(dir_name)
+                with open(dir_name + "schema.xml", "w") as f:
+                    f.write(schema)
+                with open(dir_name + "query.xml", "w") as f:
+                    f.write(query_xml)
+
+                copyfile("../benedikt/case.properties", dir_name + "case.properties")
+
+                found_plan, timeout = find_plan_benedikt(dir_name)
+
+                if found_plan:
+                    answered_benedikt += 1
+                elif timeout:
+                    timeout_benedikt += 1
+
                 query = Function()
                 query.add_atom(relation, "x", "y")
                 deter = utils.get_dfa_from_functions(functions, relation)
@@ -84,3 +117,6 @@ if __name__ == '__main__':
                     n_function, proba_existential, 0, answered_us / len(relations), 0])) + "\n")
                 f.write("\t".join(map(str, [min_length, max_length, n_relation,
                     n_function, proba_existential, 1, answered_susie / len(relations), answered_fake_susie / len(relations)])) +  "\n")
+                f.write("\t".join(map(str, [min_length, max_length, n_relation,
+                                            n_function, proba_existential, 2, answered_benedikt / len(relations),
+                                            timeout_benedikt / len(relations)])) + "\n")
