@@ -33,7 +33,10 @@ def find_plan_benedikt(name):
             return found_plan, timeout
     except subprocess.CalledProcessError:
         pass
-    for k in range(1, K_MAX):
+    max_value = K_MAX
+    min_value = 1
+    while min_value <= max_value:
+        k = int((max_value + min_value) / 2)
         try:
             output = subprocess.check_output(['java', '-jar',
                                               '../benedikt/pdq-benchmark-1.0.0-SNAPSHOT.one-jar.jar',
@@ -41,10 +44,20 @@ def find_plan_benedikt(name):
                                               '--timeout', TIMEOUT]).decode("utf-8")
             found_plan = "BEST PLAN:" in output
             timeout = "TIMEOUT EXPIRED" in output
-            if found_plan or timeout:
+            if found_plan:
                 return found_plan, timeout
+            elif timeout:
+                if k == max_value:
+                    k -= 1
+                max_value = k
+            else:
+                if k == min_value:
+                    k += 1
+                min_value = k
         except subprocess.CalledProcessError:
-            return False, True
+            if k == max_value:
+                k -= 1
+            max_value = k
     return False, True
 
 
