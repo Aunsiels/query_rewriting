@@ -11,7 +11,7 @@ from smart_plan.utils import get_schema_xml, get_all_linear_subfunctions, get_qu
 
 if len(argv) > 1:
     filename = argv[1]
-    file_unique_suffix = argv[1].split(".")[0]
+    file_unique_suffix = argv[1].split("/")[-1].split(".")[0]
 else:
     filename = "result_experiments_random_new.tsv"
     file_unique_suffix = str(abs(random.randint()))
