@@ -112,6 +112,8 @@ if __name__ == '__main__':
             print(answered_us / len(relations) * 100.0, "% queries were answered for us")
             print(answered_susie / len(relations) * 100.0, "% queries were answered for susie")
             print(answered_fake_susie / len(relations) * 100.0, "% queries were wrongly answered for susie")
+            print(answered_benedikt / len(relations) * 100.0, "% queries were answered for PDQ")
+            print(timeout_benedikt / len(relations) * 100.0, "% queries were timed out for PDQ")
             with open(filename, "a") as f:
                 f.write("\t".join(map(str, [min_length, max_length, n_relation,
                     n_function, proba_existential, 0, answered_us / len(relations), 0])) + "\n")
