@@ -47,6 +47,7 @@ experiments_setups = \
          (1, 4, 15, 15, 0.2)
         ]
 
+experiments_setups = experiments_setups[::-1]
 
 if __name__ == '__main__':
 

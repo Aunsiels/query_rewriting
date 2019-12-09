@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 from shutil import copyfile
 
 from smart_plan.function_reader import FunctionReader
@@ -17,22 +18,29 @@ directories = [
                "../definition/Music/"
               ]
 
-TIMEOUT = "120000"
+TIMEOUT = str(60000 * 30)
 K_MAX = 16
 
 
 def find_plan_benedikt(name):
-    try:
-        output = subprocess.check_output(['java', '-jar',
-                                          '../benedikt/pdq-benchmark-1.0.0-SNAPSHOT.one-jar.jar',
-                                          'planner', '-i', name, '-W', '-v',
-                                          '--timeout', TIMEOUT, "-Dreasoning_type=RESTRICTED_CHASE"]).decode("utf-8")
-        found_plan = "BEST PLAN:" in output
-        timeout = "TIMEOUT EXPIRED" in output
-        if found_plan or not timeout:
-            return found_plan, timeout
-    except subprocess.CalledProcessError:
-        pass
+    while True:
+        try:
+            output = subprocess.check_output(['java', '-jar',
+                                              '../benedikt/pdq-benchmark-1.0.0-SNAPSHOT.one-jar.jar',
+                                              'planner', '-i', name, '-W', '-v',
+                                              '--timeout', TIMEOUT, "-Dreasoning_type=RESTRICTED_CHASE"]).decode("utf-8")
+            found_plan = "BEST PLAN:" in output
+            timeout = "TIMEOUT EXPIRED" in output
+            if found_plan or not timeout:
+                return found_plan, timeout
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 253:
+                # Timeout
+                break
+            else:
+                # Other error
+                print("Error", e)
+                time.sleep(60)
     max_value = K_MAX
     min_value = 0
     while min_value < max_value:
@@ -54,10 +62,15 @@ def find_plan_benedikt(name):
                 if k == min_value:
                     k += 1
                 min_value = k
-        except subprocess.CalledProcessError:
-            if k == max_value:
-                k -= 1
-            max_value = k
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 253:
+                # Timeout
+                if k == max_value:
+                    k -= 1
+                max_value = k
+            else:
+                print("Error", e)
+                time.sleep(60)
     return False, True
 
 
