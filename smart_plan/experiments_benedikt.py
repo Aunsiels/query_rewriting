@@ -18,7 +18,7 @@ directories = [
               ]
 
 TIMEOUT = "120000"
-K_MAX = 15
+K_MAX = 16
 
 
 def find_plan_benedikt(name):
@@ -34,8 +34,8 @@ def find_plan_benedikt(name):
     except subprocess.CalledProcessError:
         pass
     max_value = K_MAX
-    min_value = 1
-    while min_value <= max_value:
+    min_value = 0
+    while min_value < max_value:
         k = int((max_value + min_value) / 2)
         try:
             output = subprocess.check_output(['java', '-jar',
