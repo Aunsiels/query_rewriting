@@ -119,12 +119,12 @@ class Function(object):
         productions.add(Production(var_s, [q]))
 
         # S -> Bq . q
-        productions.add(Production(var_s, [b_relation_variables[q.get_value()], q]))
+        productions.add(Production(var_s, [b_relation_variables[q.value], q]))
         # S -> q Bq- q-
-        productions.add(Production(var_s, [q, b_relation_variables[q_minus.get_value()], q_minus]))
+        productions.add(Production(var_s, [q, b_relation_variables[q_minus.value], q_minus]))
         # S -> Bq q Bq- q-
-        productions.add(Production(var_s, [b_relation_variables[q.get_value()], q,
-                                           b_relation_variables[q_minus.get_value()],
+        productions.add(Production(var_s, [b_relation_variables[q.value], q,
+                                           b_relation_variables[q_minus.value],
                                            q_minus]))
 
         # Br1 -> Br1 Lr2
