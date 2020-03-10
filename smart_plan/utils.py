@@ -146,7 +146,7 @@ def get_folded_automaton(enfa):
         for relation in in_edges[first]:
             if relation == star:
                 continue
-            inverse_relation = Symbol(get_inverse_relation(relation.get_value()))
+            inverse_relation = Symbol(get_inverse_relation(relation.value))
             for previous_state in in_edges[first][relation]:
                 for start_state in start_states:
                     for next_state in out_edges[start_state].get(inverse_relation, []):
@@ -160,7 +160,7 @@ def get_folded_automaton(enfa):
         for relation in out_edges[state]:
             if relation == star:
                 continue
-            inverse = Symbol(get_inverse_relation(relation.get_value()))
+            inverse = Symbol(get_inverse_relation(relation.value))
             for middle_state in out_edges[state][relation]:
                 for middle_state2 in out_edges[middle_state][star]:
                     if inverse not in out_edges[middle_state2]:
@@ -197,7 +197,7 @@ def get_folded_automaton(enfa):
                 continue
             for state in out_edges[second][a]:
                 # second -- a ---> state
-                opposite = Symbol(get_inverse_relation(a.get_value()))
+                opposite = Symbol(get_inverse_relation(a.value))
                 if opposite in alphabet:
                     for begin in in_edges[first][opposite]:
                         # begin -- a- ---> first
@@ -267,7 +267,7 @@ def get_transducer_parser(functions):
 
 
 def get_translation(fst, word):
-    word = [x.get_value() for x in word]
+    word = [x.value for x in word]
     for translation in fst.translate(word):
         return translation
 
