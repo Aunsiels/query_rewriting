@@ -256,7 +256,7 @@ def get_transducer_parser(functions):
             for i, atom in enumerate(linear_path):
                 out = []
                 if i == len(linear_path) - 1:
-                    out.append(function.name)
+                    out.append(function.name + "#" + str(len(linear_path)))
                 next_state = str(counter)
                 counter += 1
                 fst.add_transition(current_state, atom, next_state, out)
