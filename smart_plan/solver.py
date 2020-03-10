@@ -14,15 +14,22 @@ class Solver:
         if self.relations is None:
             self.relations = sorted(utils.get_all_relations(functions))
         self.fst = utils.get_transducer_parser(functions)
+        self.prev_cfg = None
+        self.prev_relation = None
 
     def solve(self, query_relation, max_length=-1):
         if query_relation not in self.relations:
             return None
-        query = Function()
-        query.add_atom(query_relation, "x", "y")
-        deter = utils.get_dfa_from_functions(self.functions, query_relation)
-        cfg = query.get_longest_query_grammar(self.relations, self.uids)
-        cfg = cfg.intersection(deter)
+        if self.prev_relation == query_relation:
+            cfg = self.prev_cfg
+        else:
+            query = Function()
+            query.add_atom(query_relation, "x", "y")
+            deter = utils.get_dfa_from_functions(self.functions, query_relation)
+            cfg = query.get_longest_query_grammar(self.relations, self.uids)
+            cfg = cfg.intersection(deter)
+            self.prev_relation = query_relation
+            self.prev_cfg = cfg
         if not cfg.is_empty():
             for word in cfg.get_words(max_length=max_length):
                 return utils.get_translation(self.fst, word)
