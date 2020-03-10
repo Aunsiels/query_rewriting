@@ -26,7 +26,7 @@ def get_all_linear_paths(functions):
         for path in function.get_linear_paths():
             if path not in linear_paths:
                 linear_paths.append(path)
-    print("We extracted:", len(linear_paths), "linear paths")
+    #print("We extracted:", len(linear_paths), "linear paths")
     return linear_paths
 
 
@@ -239,8 +239,8 @@ def get_dfa_from_functions(functions, query):
     transition_function, states, symbols, final_states = get_transition_function_and_states_and_symbols(functions, query)
     nfa = NondeterministicFiniteAutomaton(states, symbols, transition_function, {State("Start")}, final_states)
     dfa = nfa.to_deterministic()
-    print("We have:", dfa.get_number_states(), "states")
-    print("Minimize")
+    #print("We have:", dfa.get_number_states(), "states")
+    #print("Minimize")
     dfa = dfa.minimize()
     return dfa
 
@@ -295,7 +295,19 @@ def get_nicoleta_assumption_uids(linear_functions):
     uids = set()
     for linear_function in linear_functions:
         for i in range(0, len(linear_function) - 1):
-            uids.add(UID(get_inverse_relation(linear_function[i]), linear_function[i+1]))
+            uids.add(UID(get_inverse_relation(linear_function[i]),
+                         linear_function[i+1]))
+    return deduce_all_uids(list(uids))
+
+
+def get_full_nicoleta_assumption_uids(linear_functions):
+    uids = set()
+    for linear_function in linear_functions:
+        for i in range(0, len(linear_function) - 1):
+            uids.add(UID(get_inverse_relation(linear_function[i]),
+                         linear_function[i+1]))
+            uids.add(UID(linear_function[i + 1],
+                         get_inverse_relation(linear_function[i])))
     return deduce_all_uids(list(uids))
 
 
