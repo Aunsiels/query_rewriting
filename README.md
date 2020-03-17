@@ -2,6 +2,7 @@
 
 This Github repository contains the implementation of the experiments used in:
 
+```
 @misc{romero2020equivalent,
     title={Equivalent Rewritings on Path Views with Binding Patterns},
     author={Julien Romero and Nicoleta Preda and Antoine Amarilli and Fabian Suchanek},
@@ -10,6 +11,7 @@ This Github repository contains the implementation of the experiments used in:
     archivePrefix={arXiv},
     primaryClass={cs.DB}
 }
+```
 
 ## Installation
 
