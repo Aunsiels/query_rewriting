@@ -1,4 +1,4 @@
-# Query Containment Experiments
+# Query Rewriting Experiments
 
 This Github repository contains the implementation of the experiments used in:
 
