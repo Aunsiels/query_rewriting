@@ -9,48 +9,59 @@ import logging
 
 from smart_plan.utils import get_all_linear_subfunctions, get_schema_xml, get_query_xml
 
-logging.basicConfig(filename='experiments_benedikt.log', level=logging.DEBUG)
+logging.basicConfig(filename='experiments_pdq2.log', level=logging.DEBUG)
 
 
 directories = [
-               "../definition/Books/",
                "../definition/Movies/",
-               "../definition/Music/"
+               "../definition/Music/",
+               "../definition/Books/",
               ]
 
-TIMEOUT = str(60000 * 30)
-K_MAX = 16
+TIMEOUT = str(30 * 60 * 1000)
+K_MAX = 32
+
+logging.info("Timeout: " + TIMEOUT)
+logging.info("K_MAX: " + str(K_MAX))
 
 
-def find_plan_benedikt(name):
-    while True:
-        try:
-            output = subprocess.check_output(['java', '-jar',
-                                              '../benedikt/pdq-benchmark-1.0.0-SNAPSHOT.one-jar.jar',
-                                              'planner', '-i', name, '-W', '-v',
-                                              '--timeout', TIMEOUT, "-Dreasoning_type=RESTRICTED_CHASE"]).decode("utf-8")
-            found_plan = "BEST PLAN:" in output
-            timeout = "TIMEOUT EXPIRED" in output
-            if found_plan or not timeout:
-                return found_plan, timeout
-        except subprocess.CalledProcessError as e:
-            if e.returncode == 253:
-                # Timeout
-                break
-            else:
-                # Other error
-                print("Error", e)
-                time.sleep(60)
+def find_plan_pdq(name):
+    try:
+        output = subprocess.check_output(['java', '-jar',
+                                            '../pdq2/pdq_planner.jar',
+                                            '-q', name + "query.xml", '-v',
+                                            '-s', name + "schema.xml",
+                                            '-Dtimeout=' + str(TIMEOUT),
+                                            "-Dreasoning_type=KTERMINATION_CHASE",
+                                            "-Dplanner_type=LINEAR_GENERIC",
+                                            "-Dtermination_k=" + str(K_MAX),
+                                            "-Dk_termination=" + str(K_MAX),
+                                            "-Dfind_best_plan=false"]).decode("utf-8")
+        found_plan = "Plan found with cost" in output
+        timeout = "TIMEOUT EXPIRED" in output
+        if found_plan or not timeout:
+            return found_plan, timeout
+    except subprocess.CalledProcessError as e:
+        print("Error", e)
     max_value = K_MAX
     min_value = 0
+    keep_up = True
     while min_value < max_value:
         k = int((max_value + min_value) / 2)
+        timeout = False
+        print(k)
         try:
             output = subprocess.check_output(['java', '-jar',
-                                              '../benedikt/pdq-benchmark-1.0.0-SNAPSHOT.one-jar.jar',
-                                              'planner', '-i', name, '-W', '-v', '-Dtermination_k=' + str(k),
-                                              '--timeout', TIMEOUT]).decode("utf-8")
-            found_plan = "BEST PLAN:" in output
+                                              '../pdq2/pdq_planner.jar',
+                                              '-q', name + "query.xml", '-v',
+                                              '-s', name + "schema.xml",
+                                              '-Dtimeout=' + str(TIMEOUT),
+                                              "-Dreasoning_type=KTERMINATION_CHASE",
+                                              "-Dplanner_type=LINEAR_KCHASE",
+                                              "-Dtermination_k=" + str(k),
+                                              "-Dk_termination=" + str(k),
+                                              "-Dfind_best_plan=false"]).decode("utf-8")
+            found_plan = "Plan found with cost" in output
             timeout = "TIMEOUT EXPIRED" in output
             if found_plan:
                 return found_plan, timeout
@@ -63,14 +74,15 @@ def find_plan_benedikt(name):
                     k += 1
                 min_value = k
         except subprocess.CalledProcessError as e:
-            if e.returncode == 253:
-                # Timeout
-                if k == max_value:
-                    k -= 1
-                max_value = k
-            else:
-                print("Error", e)
-                time.sleep(60)
+            keep_up = False
+            if k == max_value:
+                k -= 1
+            max_value = k
+            print(e)
+        if timeout:
+            keep_up = False
+        if min_value == max_value and not timeout and keep_up:
+            max_value *= 2
     return False, True
 
 
@@ -117,7 +129,7 @@ if __name__ == '__main__':
 
             copyfile("../benedikt/case.properties", dir_name + "case.properties")
 
-            found_plan, timeout = find_plan_benedikt(dir_name)
+            found_plan, timeout = find_plan_pdq(dir_name)
 
             if found_plan:
                 logging.info("%s can be answered.", relation)

@@ -382,10 +382,10 @@ def get_query_xml(relation):
         relation = get_inverse_relation(relation)
         xml += '<atom name="' + relation + '">\n'
         xml += '<variable name="b" />\n'
-        xml += '<constant value="a" />\n'
+        xml += '<constant value="a" type="java.lang.String"/>\n'
     else:
         xml += '<atom name="' + relation + '">\n'
-        xml += '<constant value="a" />\n'
+        xml += '<constant value="a" type="java.lang.String"/>\n'
         xml += '<variable name="b" />\n'
     xml += """</atom>
     </body>

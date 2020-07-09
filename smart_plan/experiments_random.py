@@ -3,6 +3,7 @@ from random import random
 from shutil import copyfile
 
 from smart_plan.experiments_benedikt import find_plan_benedikt
+from smart_plan.experiments_pdq2 import find_plan_pdq
 from smart_plan.function import Function
 from smart_plan import utils
 from sys import argv
@@ -78,6 +79,8 @@ if __name__ == '__main__':
             answered_fake_susie = 0
             answered_benedikt = 0
             timeout_benedikt = 0
+            answered_pdq = 0
+            timeout_pdq = 0
 
             for relation in relations:
                 query_xml = get_query_xml(relation)
@@ -97,6 +100,13 @@ if __name__ == '__main__':
                     answered_benedikt += 1
                 elif timeout:
                     timeout_benedikt += 1
+
+                found_plan, timeout = find_plan_pdq(dir_name)
+
+                if found_plan:
+                    answered_pdq += 1
+                elif timeout:
+                    timeout_pdq += 1
 
                 query = Function()
                 query.add_atom(relation, "x", "y")
@@ -122,6 +132,8 @@ if __name__ == '__main__':
             print(answered_fake_susie / len(relations) * 100.0, "% queries were wrongly answered for susie")
             print(answered_benedikt / len(relations) * 100.0, "% queries were answered for PDQ")
             print(timeout_benedikt / len(relations) * 100.0, "% queries were timed out for PDQ")
+            print(answered_pdq / len(relations) * 100.0, "% queries were answered for PDQ2")
+            print(timeout_pdq / len(relations) * 100.0, "% queries were timed out for PDQ2")
             with open(filename, "a") as f:
                 f.write("\t".join(map(str, [min_length, max_length, n_relation,
                     n_function, proba_existential, 0, answered_us / len(relations), 0])) + "\n")
@@ -130,3 +142,6 @@ if __name__ == '__main__':
                 f.write("\t".join(map(str, [min_length, max_length, n_relation,
                                             n_function, proba_existential, 2, answered_benedikt / len(relations),
                                             timeout_benedikt / len(relations)])) + "\n")
+                f.write("\t".join(map(str, [min_length, max_length, n_relation,
+                                            n_function, proba_existential, 2, answered_pdq / len(relations),
+                                            timeout_pdq / len(relations)])) + "\n")
