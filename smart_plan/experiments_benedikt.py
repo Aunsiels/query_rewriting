@@ -18,7 +18,7 @@ directories = [
                "../definition/Music/"
               ]
 
-TIMEOUT = str(60000 * 30)
+TIMEOUT = str(60000 * 1)
 K_MAX = 16
 
 
@@ -40,7 +40,8 @@ def find_plan_benedikt(name):
             else:
                 # Other error
                 print("Error", e)
-                time.sleep(60)
+                #time.sleep(60)
+                break
     max_value = K_MAX
     min_value = 0
     while min_value < max_value:
@@ -63,14 +64,10 @@ def find_plan_benedikt(name):
                     k += 1
                 min_value = k
         except subprocess.CalledProcessError as e:
-            if e.returncode == 253:
-                # Timeout
-                if k == max_value:
-                    k -= 1
-                max_value = k
-            else:
-                print("Error", e)
-                time.sleep(60)
+            # Timeout
+            if k == max_value:
+                k -= 1
+            max_value = k
     return False, True
 
 

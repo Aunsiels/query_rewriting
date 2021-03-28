@@ -94,6 +94,7 @@ if __name__ == '__main__':
 
                 copyfile("../benedikt/case.properties", dir_name + "case.properties")
 
+                print("Benedikt")
                 found_plan, timeout = find_plan_benedikt(dir_name)
 
                 if found_plan:
@@ -101,6 +102,7 @@ if __name__ == '__main__':
                 elif timeout:
                     timeout_benedikt += 1
 
+                print("PDQ")
                 found_plan, timeout = find_plan_pdq(dir_name)
 
                 if found_plan:
@@ -143,5 +145,5 @@ if __name__ == '__main__':
                                             n_function, proba_existential, 2, answered_benedikt / len(relations),
                                             timeout_benedikt / len(relations)])) + "\n")
                 f.write("\t".join(map(str, [min_length, max_length, n_relation,
-                                            n_function, proba_existential, 2, answered_pdq / len(relations),
+                                            n_function, proba_existential, 3, answered_pdq / len(relations),
                                             timeout_pdq / len(relations)])) + "\n")

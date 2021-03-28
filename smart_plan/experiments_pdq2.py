@@ -18,8 +18,8 @@ directories = [
                "../definition/Books/",
               ]
 
-TIMEOUT = str(30 * 60 * 1000)
-K_MAX = 32
+TIMEOUT = str(1 * 60 * 1000)
+K_MAX = 16
 
 logging.info("Timeout: " + TIMEOUT)
 logging.info("K_MAX: " + str(K_MAX))
@@ -27,7 +27,7 @@ logging.info("K_MAX: " + str(K_MAX))
 
 def find_plan_pdq(name):
     try:
-        output = subprocess.check_output(['java', '-jar',
+        output = subprocess.check_output(['java', '-Xmx4G', '-jar',
                                             '../pdq2/pdq_planner.jar',
                                             '-q', name + "query.xml", '-v',
                                             '-s', name + "schema.xml",
@@ -51,7 +51,7 @@ def find_plan_pdq(name):
         timeout = False
         print(k)
         try:
-            output = subprocess.check_output(['java', '-jar',
+            output = subprocess.check_output(['java', '-Xmx4G', '-jar',
                                               '../pdq2/pdq_planner.jar',
                                               '-q', name + "query.xml", '-v',
                                               '-s', name + "schema.xml",
